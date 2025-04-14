@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Interest Calculator (BS Date)</title>
+    <!-- Nepali Date Picker CSS -->
+    <link href="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/nepali.datepicker.v4.0.8.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f8f5;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>मासिक ब्याज क्यालकुलेटर</h2>
+        <div class="form-group">
+            <label for="principal">मूल रकम (रु):</label>
+            <input type="number" id="principal" placeholder="जस्तै: १००००">
+        </div>
+        <div class="form-group">
+            <label for="rate">मासिक ब्याज दर (%):</label>
+            <input type="number" id="rate" placeholder="जस्तै: २% को लागि २">
+        </div>
+        <div class="form-group">
+            <label for="startDate">सुरु मिति (बि.स.):</label>
+            <input type="text" id="startDate" class="nepali-datepicker" placeholder="मिति छान्नुहोस्" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label for="endDate">अन्त्य मिति (बि.स.):</label>
+            <input type="text" id="endDate" class="nepali-datepicker" placeholder="मिति छान्नुहोस्" autocomplete="off">
+        </div>
+        <button onclick="calculateInterest()">गणना गर्नुहोस्</button>
+        <div id="result"></div>
+    </div>
+
+    <!-- Required Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/nepali.datepicker.v4.0.8.min.js"></script>
+    
+    <script>
+        // Initialize Nepali Date Picker with proper timing
+        $(document).ready(function() {
+            // Initialize first date picker
+            $('#startDate').nepaliDatePicker({
+                ndpYear: true,
+                ndpMonth: true,
+                ndpYearCount: 10,
+                dateFormat: "MM/DD/YYYY",
+                language: "nepali",
+                disableDaysAfter: 0
+            });
+            
+            // Initialize second date picker after a slight delay
+            setTimeout(function() {
+                $('#endDate').nepaliDatePicker({
+                    ndpYear: true,
+                    ndpMonth: true,
+                    ndpYearCount: 10,
+                    dateFormat: "MM/DD/YYYY",
+                    language: "nepali",
+                    disableDaysAfter: 0
+                });
+            }, 100);
+        });
+
+        function calculateInterest() {
+            // Get input values
+            const principal = parseFloat($('#principal').val());
+            const rate = parseFloat($('#rate').val());
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            // Validate inputs
+            if (isNaN(principal) || isNaN(rate) || !startDate || !endDate) {
+                alert("कृपया सबै फिल्डहरू भर्नुहोस्!");
+                return;
+            }
+
+            // Parse BS dates (MM/DD/YYYY)
+            const startParts = startDate.split('/');
+            const endParts = endDate.split('/');
+            
+            if (startParts.length !== 3 || endParts.length !== 3) {
+                alert("कृपया मिति ठीक ढंगमा भर्नुहोस् (MM/DD/YYYY)");
+                return;
+            }
+
+            const startMonth = parseInt(startParts[0]);
+            const startDay = parseInt(startParts[1]);
+            const startYear = parseInt(startParts[2]);
+            
+            const endMonth = parseInt(endParts[0]);
+            const endDay = parseInt(endParts[1]);
+            const endYear = parseInt(endParts[2]);
+
+            // Calculate difference in months
+            let monthsDiff = (endYear - startYear) * 12 + (endMonth - startMonth);
+            if (endDay > startDay) {
+                monthsDiff += 0.5; // Approximate for partial month
+            }
+
+            // Calculate interest
+            const monthlyRate = rate / 100; // Convert % to decimal
+            const interest = principal * monthlyRate * monthsDiff;
+
+            // Display result
+            $('#result').html(`
+                <p><strong>गणना नतिजा:</strong></p>
+                <p>मूल रकम: रु ${principal.toFixed(2)}</p>
+                <p>मासिक ब्याज दर: ${rate}%</p>
+                <p>सुरु मिति: ${startDate} (बि.स.)</p>
+                <p>अन्त्य मिति: ${endDate} (बि.स.)</p>
+                <p>अवधि: ${monthsDiff.toFixed(2)} महिना</p>
+                <p><strong>कुल ब्याज: रु ${interest.toFixed(2)}</strong></p>
+            `).show();
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Interest Calculator (BS Date)</title>
+    <!-- Nepali Date Picker CSS -->
+    <link href="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/nepali.datepicker.v4.0.8.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f8f5;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>मासिक ब्याज क्यालकुलेटर</h2>
+        <div class="form-group">
+            <label for="principal">मूल रकम (रु):</label>
+            <input type="number" id="principal" placeholder="जस्तै: १००००">
+        </div>
+        <div class="form-group">
+            <label for="rate">मासिक ब्याज दर (%):</label>
+            <input type="number" id="rate" placeholder="जस्तै: २% को लागि २">
+        </div>
+        <div class="form-group">
+            <label for="startDate">सुरु मिति (बि.स.):</label>
+            <input type="text" id="startDate" class="nepali-datepicker" placeholder="मिति छान्नुहोस्" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label for="endDate">अन्त्य मिति (बि.स.):</label>
+            <input type="text" id="endDate" class="nepali-datepicker" placeholder="मिति छान्नुहोस्" autocomplete="off">
+        </div>
+        <button onclick="calculateInterest()">गणना गर्नुहोस्</button>
+        <div id="result"></div>
+    </div>
+
+    <!-- Required Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://nepalidatepicker.sajanmaharjan.com.np/nepali.datepicker/nepali.datepicker.v4.0.8.min.js"></script>
+    
+    <script>
+        // Initialize Nepali Date Picker with proper timing
+        $(document).ready(function() {
+            // Initialize first date picker
+            $('#startDate').nepaliDatePicker({
+                ndpYear: true,
+                ndpMonth: true,
+                ndpYearCount: 10,
+                dateFormat: "MM/DD/YYYY",
+                language: "nepali",
+                disableDaysAfter: 0
+            });
+            
+            // Initialize second date picker after a slight delay
+            setTimeout(function() {
+                $('#endDate').nepaliDatePicker({
+                    ndpYear: true,
+                    ndpMonth: true,
+                    ndpYearCount: 10,
+                    dateFormat: "MM/DD/YYYY",
+                    language: "nepali",
+                    disableDaysAfter: 0
+                });
+            }, 100);
+        });
+
+        function calculateInterest() {
+            // Get input values
+            const principal = parseFloat($('#principal').val());
+            const rate = parseFloat($('#rate').val());
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            // Validate inputs
+            if (isNaN(principal) || isNaN(rate) || !startDate || !endDate) {
+                alert("कृपया सबै फिल्डहरू भर्नुहोस्!");
+                return;
+            }
+
+            // Parse BS dates (MM/DD/YYYY)
+            const startParts = startDate.split('/');
+            const endParts = endDate.split('/');
+            
+            if (startParts.length !== 3 || endParts.length !== 3) {
+                alert("कृपया मिति ठीक ढंगमा भर्नुहोस् (MM/DD/YYYY)");
+                return;
+            }
+
+            const startMonth = parseInt(startParts[0]);
+            const startDay = parseInt(startParts[1]);
+            const startYear = parseInt(startParts[2]);
+            
+            const endMonth = parseInt(endParts[0]);
+            const endDay = parseInt(endParts[1]);
+            const endYear = parseInt(endParts[2]);
+
+            // Calculate difference in months
+            let monthsDiff = (endYear - startYear) * 12 + (endMonth - startMonth);
+            if (endDay > startDay) {
+                monthsDiff += 0.5; // Approximate for partial month
+            }
+
+            // Calculate interest
+            const monthlyRate = rate / 100; // Convert % to decimal
+            const interest = principal * monthlyRate * monthsDiff;
+
+            // Display result
+            $('#result').html(`
+                <p><strong>गणना नतिजा:</strong></p>
+                <p>मूल रकम: रु ${principal.toFixed(2)}</p>
+                <p>मासिक ब्याज दर: ${rate}%</p>
+                <p>सुरु मिति: ${startDate} (बि.स.)</p>
+                <p>अन्त्य मिति: ${endDate} (बि.स.)</p>
+                <p>अवधि: ${monthsDiff.toFixed(2)} महिना</p>
+                <p><strong>कुल ब्याज: रु ${interest.toFixed(2)}</strong></p>
+            `).show();
+        }
+    </script>
+</body>
+</html>
