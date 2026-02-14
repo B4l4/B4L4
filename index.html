@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>नेपाली ब्याज क्याल्कुलेटर · Bikram Sambat Date Pickers</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(145deg, #f0f7f0 0%, #e9f0e9 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        .card-custom {
+            border: none;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 30px 45px -20px rgba(0, 40, 0, 0.4);
+        }
+        .input-group-custom {
+            border-radius: 14px;
+            border: 1px solid #c0e0c0;
+            transition: 0.2s;
+        }
+        .input-group-custom:hover {
+            border-color: #2b7a4b;
+            box-shadow: 0 0 0 4px rgba(43, 122, 75, 0.1);
+        }
+        .btn-nepal {
+            background-color: #1f543b;
+            color: white;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 40px;
+            border: none;
+            transition: 0.2s;
+        }
+        .btn-nepal:hover {
+            background-color: #2f6e4a;
+            transform: scale(1.02);
+        }
+        .result-box {
+            background: #dcfce7;
+            border-radius: 30px;
+            padding: 1.5rem;
+            border-left: 8px solid #1b8c3e;
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #0a3b1e;
+            min-height: 120px;
+        }
+        .label-icon {
+            color: #1f543b;
+            margin-right: 8px;
+        }
+        .small-note {
+            font-size: 0.9rem;
+            color: #2d5a3c;
+        }
+        .date-picker-container {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            border: 1px solid #c0e0c0;
+        }
+        .calculation-detail {
+            font-size: 0.9rem;
+            color: #1f543b;
+            background: #e8f5e9;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        .rate-badge {
+            background: #ffd700;
+            color: #1f543b;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                <div class="card card-custom p-4 p-lg-5">
+                    <div class="text-center mb-4">
+                        <span class="badge bg-success bg-opacity-25 text-dark px-4 py-2 rounded-pill">
+                            <i class="fas fa-calendar-alt me-2"></i>बिक्रम संवत् (Bikram Sambat) २०८०-२०९०
+                        </span>
+                        <h2 class="mt-3 fw-bold text-success-emphasis">Interest Calculator</h2>
+                        <p class="text-secondary">
+                            <span class="rate-badge">३.५% प्रति महिना (3.5% per month)</span>
+                        </p>
+                    </div>
+
+                    <!-- Main Form -->
+                    <div class="row g-4">
+                        <!-- Principal -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold"><i class="fas fa-coins label-icon"></i>Principal (Rs)</label>
+                            <div class="input-group input-group-custom">
+                                <span class="input-group-text bg-white border-0">रु</span>
+                                <input type="number" id="principal" class="form-control border-0" placeholder="e.g., 100000" value="100000" step="1000">
+                            </div>
+                        </div>
+
+                        <!-- Interest Rate (%) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold"><i class="fas fa-percent label-icon"></i>Interest Rate (% per month)</label>
+                            <div class="input-group input-group-custom">
+                                <input type="number" id="rate" class="form-control border-0" placeholder="e.g., 3.5" value="3.5" step="0.1">
+                                <span class="input-group-text bg-white border-0">% प्रति महिना</span>
+                            </div>
+                        </div>
+
+                        <!-- Start Date (Nepali BS) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold"><i class="fas fa-play-circle label-icon"></i>Start Date (BS)</label>
+                            <div class="date-picker-container">
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <select id="startYear" class="form-select"></select>
+                                    </div>
+                                    <div class="col-4">
+                                        <select id="startMonth" class="form-select">
+                                            <option value="1">बैशाख</option>
+                                            <option value="2">जेठ</option>
+                                            <option value="3">असार</option>
+                                            <option value="4">साउन</option>
+                                            <option value="5">भदौ</option>
+                                            <option value="6">असोज</option>
+                                            <option value="7">कात्तिक</option>
+                                            <option value="8">मंसिर</option>
+                                            <option value="9">पुष</option>
+                                            <option value="10">माघ</option>
+                                            <option value="11">फाल्गुन</option>
+                                            <option value="12">चैत्र</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <select id="startDay" class="form-select"></select>
+                                    </div>
+                                </div>
+                                <div class="small-note mt-2">
+                                    <i class="fas fa-tree me-1"></i>सुरु मिति (बि.सं.)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- End Date (Nepali BS) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold"><i class="fas fa-flag-checkered label-icon"></i>End Date (BS)</label>
+                            <div class="date-picker-container">
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <select id="endYear" class="form-select"></select>
+                                    </div>
+                                    <div class="col-4">
+                                        <select id="endMonth" class="form-select">
+                                            <option value="1">बैशाख</option>
+                                            <option value="2">जेठ</option>
+                                            <option value="3">असार</option>
+                                            <option value="4">साउन</option>
+                                            <option value="5">भदौ</option>
+                                            <option value="6">असोज</option>
+                                            <option value="7">कात्तिक</option>
+                                            <option value="8">मंसिर</option>
+                                            <option value="9">पुष</option>
+                                            <option value="10">माघ</option>
+                                            <option value="11">फाल्गुन</option>
+                                            <option value="12">चैत्र</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <select id="endDay" class="form-select"></select>
+                                    </div>
+                                </div>
+                                <div class="small-note mt-2">
+                                    <i class="fas fa-calendar-check me-1"></i>अन्त्य मिति (बि.सं.)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info & calculation rule reminder -->
+                    <div class="alert alert-success bg-opacity-10 border-0 mt-4 d-flex align-items-center" role="alert">
+                        <i class="fas fa-gavel fs-3 me-3"></i>
+                        <div><strong>ब्याज नियम (Interest rule):</strong><br>
+                        • दर: ३.५% प्रति महिना (3.5% per month)<br>
+                        • सबै महिना ३० दिनको मानिन्छ (All months = 30 days)<br>
+                        • अवधि १५ दिन वा सो भन्दा बढी → पूरै महिनाको ब्याज<br>
+                        • अवधि १५ दिन भन्दा कम → दैनिक ब्याज (Principal × 3.5% ÷ 30 × days)</div>
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <div class="d-grid mt-3">
+                        <button class="btn btn-nepal py-3" id="calculateBtn">
+                            <i class="fas fa-calculator me-2"></i>ब्याज गणना गर्नुहोस्
+                        </button>
+                    </div>
+
+                    <!-- Result Display -->
+                    <div class="result-box mt-4 text-center" id="resultBox">
+                        <div id="interestAmount" style="font-size: 2rem; font-weight: 700;">रु ०.००</div>
+                        <div class="text-secondary mt-2" id="detailMsg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        (function() {
+            // Populate dropdowns
+            function populateDropdowns() {
+                // Years 2080-2090
+                const startYearSelect = document.getElementById('startYear');
+                const endYearSelect = document.getElementById('endYear');
+                
+                for(let y=2080; y<=2090; y++) {
+                    let option1 = document.createElement('option');
+                    option1.value = y;
+                    option1.textContent = y;
+                    startYearSelect.appendChild(option1);
+                    
+                    let option2 = document.createElement('option');
+                    option2.value = y;
+                    option2.textContent = y;
+                    endYearSelect.appendChild(option2);
+                }
+                
+                // Days 1-30 (since all months are 30 days)
+                const startDaySelect = document.getElementById('startDay');
+                const endDaySelect = document.getElementById('endDay');
+                
+                for(let d=1; d<=30; d++) {
+                    let option1 = document.createElement('option');
+                    option1.value = d;
+                    option1.textContent = d;
+                    startDaySelect.appendChild(option1);
+                    
+                    let option2 = document.createElement('option');
+                    option2.value = d;
+                    option2.textContent = d;
+                    endDaySelect.appendChild(option2);
+                }
+            }
+            
+            populateDropdowns();
+
+            // Calculate days between two BS dates (assuming 30 days per month)
+            function calculateDaysBetween(startYear, startMonth, startDay, endYear, endMonth, endDay) {
+                // Convert everything to total days from a reference point
+                // Using 30 days per month
+                
+                const startTotalDays = (startYear * 360) + ((startMonth - 1) * 30) + (startDay - 1);
+                const endTotalDays = (endYear * 360) + ((endMonth - 1) * 30) + (endDay - 1);
+                
+                return endTotalDays - startTotalDays;
+            }
+
+            // Format BS date
+            function formatBSDate(year, month, day) {
+                const monthNames = ['बैशाख', 'जेठ', 'असार', 'साउन', 'भदौ', 'असोज', 
+                                   'कात्तिक', 'मंसिर', 'पुष', 'माघ', 'फाल्गुन', 'चैत्र'];
+                return `${year}-${month.toString().padStart(2,'0')}-${day.toString().padStart(2,'0')} BS (${monthNames[month-1]})`;
+            }
+
+            // Get DOM elements
+            const calculateBtn = document.getElementById('calculateBtn');
+            const principalInput = document.getElementById('principal');
+            const rateInput = document.getElementById('rate');
+            
+            const startYear = document.getElementById('startYear');
+            const startMonth = document.getElementById('startMonth');
+            const startDay = document.getElementById('startDay');
+            
+            const endYear = document.getElementById('endYear');
+            const endMonth = document.getElementById('endMonth');
+            const endDay = document.getElementById('endDay');
+            
+            const interestSpan = document.getElementById('interestAmount');
+            const detailMsg = document.getElementById('detailMsg');
+
+            // Set default values
+            setTimeout(() => {
+                startYear.value = '2080';
+                startMonth.value = '1'; // बैशाख
+                startDay.value = '1';
+                
+                endYear.value = '2080';
+                endMonth.value = '2'; // जेठ (1 month later)
+                endDay.value = '1';
+                
+                calculateInterest();
+            }, 100);
+
+            // Calculate interest function
+            function calculateInterest() {
+                // Get principal and rate
+                let principal = parseFloat(principalInput.value) || 0;
+                let rate = parseFloat(rateInput.value) || 0;
+                
+                if (principal <= 0 || rate <= 0) {
+                    interestSpan.innerText = 'रु ०.००';
+                    detailMsg.innerText = 'कृपया सही रकम र दर भर्नुहोस्';
+                    return;
+                }
+
+                // Get dates
+                const sYear = parseInt(startYear.value);
+                const sMonth = parseInt(startMonth.value);
+                const sDay = parseInt(startDay.value);
+
+                const eYear = parseInt(endYear.value);
+                const eMonth = parseInt(endMonth.value);
+                const eDay = parseInt(endDay.value);
+
+                // Calculate days between dates (using 30-day months)
+                const totalDays = calculateDaysBetween(sYear, sMonth, sDay, eYear, eMonth, eDay);
+                
+                if (totalDays < 0) {
+                    interestSpan.innerText = 'रु ०.००';
+                    detailMsg.innerText = 'सुरु मिति अन्त्य मिति भन्दा पछि छ';
+                    return;
+                }
+
+                if (totalDays === 0) {
+                    interestSpan.innerText = 'रु ०.००';
+                    detailMsg.innerText = 'दुवै मिति एउटै दिन छ';
+                    return;
+                }
+
+                // Calculate monthly and daily rates (based on monthly rate)
+                const monthlyInterest = principal * rate / 100; // Monthly interest (3.5% of principal)
+                const dailyInterest = monthlyInterest / 30; // Daily interest (monthly ÷ 30 days)
+                
+                // Calculate complete months and remaining days
+                let months = Math.floor(totalDays / 30);
+                let days = totalDays % 30;
+                
+                // Apply 15-day rule for remaining days
+                let ruleApplied = '';
+                let adjustedMonths = months;
+                let adjustedDays = days;
+                
+                if (days >= 15) {
+                    // Count remaining days as full month
+                    adjustedMonths = months + 1;
+                    adjustedDays = 0;
+                    ruleApplied = `बाँकी ${days} दिन (≥ १५) → पूरा महिना गणना`;
+                } else {
+                    adjustedMonths = months;
+                    adjustedDays = days;
+                    ruleApplied = `बाँकी ${days} दिन (< १५) → दैनिक गणना`;
+                }
+                
+                // Calculate interest
+                const interest = (adjustedMonths * monthlyInterest) + (adjustedDays * dailyInterest);
+
+                // Format result
+                const formatted = interest.toLocaleString('en-IN', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                });
+                
+                interestSpan.innerText = `रु ${formatted}`;
+
+                // Format dates for display
+                const startBS = formatBSDate(sYear, sMonth, sDay);
+                const endBS = formatBSDate(eYear, eMonth, eDay);
+                
+                // Create detailed breakdown
+                let breakdown = `<div class="calculation-detail">
+                    <strong>गणना विवरण (Calculation detail):</strong><br>
+                    मूलधन: रु ${principal.toLocaleString('en-IN')}<br>
+                    दर: ${rate}% प्रति महिना<br>
+                    मासिक ब्याज: रु ${monthlyInterest.toFixed(2)} (मूलधनको ${rate}%)<br>
+                    दैनिक ब्याज: रु ${dailyInterest.toFixed(2)} (मासिकको १/३०)<br>`;
+                
+                if (adjustedMonths > 0 && adjustedDays > 0) {
+                    breakdown += `<strong>कुल: ${adjustedMonths} महिना × रु ${monthlyInterest.toFixed(2)} + ${adjustedDays} दिन × रु ${dailyInterest.toFixed(2)} = रु ${formatted}</strong>`;
+                } else if (adjustedMonths > 0) {
+                    breakdown += `<strong>कुल: ${adjustedMonths} महिना × रु ${monthlyInterest.toFixed(2)} = रु ${formatted}</strong>`;
+                } else if (adjustedDays > 0) {
+                    breakdown += `<strong>कुल: ${adjustedDays} दिन × रु ${dailyInterest.toFixed(2)} = रु ${formatted}</strong>`;
+                }
+                
+                breakdown += `</div>`;
+                
+                detailMsg.innerHTML = `
+                    <span class="fw-bold">${ruleApplied}</span><br>
+                    <span class="text-secondary">${startBS} देखि ${endBS} सम्म (कुल ${totalDays} दिन)</span>
+                    ${breakdown}`;
+            }
+
+            // Add event listeners
+            calculateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                calculateInterest();
+            });
+
+            // Auto-calculate on change
+            principalInput.addEventListener('change', calculateInterest);
+            rateInput.addEventListener('change', calculateInterest);
+            startYear.addEventListener('change', calculateInterest);
+            startMonth.addEventListener('change', calculateInterest);
+            startDay.addEventListener('change', calculateInterest);
+            endYear.addEventListener('change', calculateInterest);
+            endMonth.addEventListener('change', calculateInterest);
+            endDay.addEventListener('change', calculateInterest);
+        })();
+    </script>
+</body>
+</html>
